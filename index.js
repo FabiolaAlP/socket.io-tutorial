@@ -6,13 +6,17 @@ import { Server } from "socket.io";
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server);
+const io = new Server(server, { connectionStateRecovery: {} });
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.get("/", (req, res) => {
   res.sendFile(join(__dirname, "index.html"));
 });
 io.on("connection", (socket) => {
   console.log("a user connected");
+  socket.on("chat message", (msg) => {
+    // console.log(`message: ${msg}`);
+    io.emit("chat message", msg);
+  });
 });
 // console.log(__dirname);
 server.listen(3000, () => {
